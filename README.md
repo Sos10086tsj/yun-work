@@ -19,7 +19,7 @@ YunWork 主要致力于mock服务，通过简单的mock方式，加快项目中�
 			family[list].id=id
 			family[list].value=fadaf
 			position[map].comp=za
-			position[model modelName]
+			position[model|modelName]
 		
 	-	java interface mock
 	-	dubbo service mock

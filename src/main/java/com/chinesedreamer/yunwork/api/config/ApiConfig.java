@@ -36,6 +36,12 @@ public class ApiConfig {
 	 */
 	@Value("${api.model.property.pattern.model}")
 	private String apiModelPropertyPatternModel;
+	
+	/**
+	 * 字库，用逗号分隔
+	 */
+	@Value("${api.mock.word.library}")
+	private String apiMockWordLibrary;
 
 	public String getApiModelRootFolder() {
 		return apiModelRootFolder;
@@ -78,6 +84,14 @@ public class ApiConfig {
 
 	public void setApiModelPropertyPatternModel(String apiModelPropertyPatternModel) {
 		this.apiModelPropertyPatternModel = apiModelPropertyPatternModel;
+	}
+
+	public String getApiMockWordLibrary() {
+		return apiMockWordLibrary;
+	}
+
+	public void setApiMockWordLibrary(String apiMockWordLibrary) {
+		this.apiMockWordLibrary = apiMockWordLibrary;
 	}
 
 }
