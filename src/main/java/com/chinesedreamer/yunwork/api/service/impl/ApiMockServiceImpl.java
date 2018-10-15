@@ -36,6 +36,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 	
 	private Logger logger = LoggerFactory.getLogger(ApiMockServiceImpl.class);
 
+	private String map_model_prefix = "@model_";
 	@Resource
 	private ApiConfig apiConfig;
 	@Override
@@ -77,7 +78,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 							modelStart = true;
 							int beginIdx = tmpStr.indexOf("_");
 							int endIdx = tmpStr.lastIndexOf("_");
-							tmpModelName = tmpStr.substring(beginIdx + 1, endIdx);
+							tmpModelName = map_model_prefix + tmpStr.substring(beginIdx + 1, endIdx);
 							mapProperties.put(tmpModelName, new ArrayList<String>());
 						}else {
 							properties.add(tmpStr.trim());
@@ -108,15 +109,25 @@ public class ApiMockServiceImpl implements ApiMockService{
 		Map<String, Object> valueMap = new HashMap<String, Object>();
 		//封装map
 		for (String property : propertyConfigurations) {
-			int confStart = property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER) + 1;
-			int confEnd = property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER);
-			String[] confs = property.substring(confStart, confEnd).split(ApplicationConstant.API_MOCK.PROP_CONF_SEPERATE_DELIMETER);
+			String[] confs = this.splitConfs(property);
 			ApiPropertyType propertyType = ApiPropertyType.get(confs[0]);
-			String propertyName = property.substring(0, confStart - 1);
+			String propertyName = property.substring(0, property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
 			MockProperty mockProperty = null;
 			switch (propertyType) {
 				case MAP:
-					Object propertyValue = this.convertObject(mapProperties.get(propertyName), null);//TODO
+					Map<String, List<String>> tmpMapProperties = null;
+					if (mapProperties.containsKey(map_model_prefix + propertyName)) {
+						for (String tmpPropConf : mapProperties.get(map_model_prefix + propertyName)) {
+							String tmpPropertyName = tmpPropConf.substring(0, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
+							if (mapProperties.containsKey(map_model_prefix + tmpPropertyName)) {
+								if (null == tmpMapProperties) {
+									tmpMapProperties = new HashMap<String, List<String>>();
+								}
+								tmpMapProperties.put(map_model_prefix + tmpPropertyName, mapProperties.get(map_model_prefix + tmpPropertyName));
+							}
+						}
+					}
+					Object propertyValue = this.convertObject(mapProperties.get(map_model_prefix + propertyName), tmpMapProperties);
 					mockProperty = this.convertProperty(propertyName, propertyType, confs, propertyValue);
 					valueMap.put(mockProperty.getPropertyName(), JSON.toJavaObject((JSON)JSON.toJSON(mockProperty.getValue()), Map.class));
 					break;
@@ -128,6 +139,12 @@ public class ApiMockServiceImpl implements ApiMockService{
 			propertyMap.put(mockProperty.getPropertyName(), mockProperty.getClazz());
 		}
 		return this.mockObject(propertyMap, valueMap);
+	}
+	
+	private String[] splitConfs(String propertyConf) {
+		int confStart = propertyConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER) + 1;
+		int confEnd = propertyConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER);
+		return propertyConf.substring(confStart, confEnd).split(ApplicationConstant.API_MOCK.PROP_CONF_SEPERATE_DELIMETER);
 	}
 	
 	/**
