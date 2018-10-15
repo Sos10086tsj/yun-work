@@ -10,6 +10,7 @@ public enum ApiPropertyType {
 	DECIMAL,
 	INT,
 	LIST,
+	MAP,
 	MODEL;
 	
 	private ApiPropertyType(){

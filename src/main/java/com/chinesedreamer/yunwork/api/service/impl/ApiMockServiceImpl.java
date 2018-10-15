@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -58,16 +59,37 @@ public class ApiMockServiceImpl implements ApiMockService{
 			InputStreamReader isr = new InputStreamReader(fis, this.apiConfig.getApiModelTemplateEncode());
 			BufferedReader br = new BufferedReader(isr);
 			String tmpStr = null;
+			
+			Map<String, List<String>> mapProperties = new HashMap<String, List<String>>();
+			boolean modelStart = false;
+			String tmpModelName = null;
 			while (null != (tmpStr = br.readLine())) {
 				if (StringUtils.isNotEmpty(tmpStr)) {
-					properties.add(tmpStr.trim());
+					if (modelStart) {
+						if (this.mapEnd(tmpStr)) {
+							modelStart = false;
+							tmpModelName = null;
+						}else {
+							mapProperties.get(tmpModelName).add(tmpStr.trim());
+						}
+					}else {
+						if (this.mapStart(tmpStr)) {//开始读取到map配置
+							modelStart = true;
+							int beginIdx = tmpStr.indexOf("_");
+							int endIdx = tmpStr.lastIndexOf("_");
+							tmpModelName = tmpStr.substring(beginIdx + 1, endIdx);
+							mapProperties.put(tmpModelName, new ArrayList<String>());
+						}else {
+							properties.add(tmpStr.trim());
+						}
+					}
 				}
 			}
 			br.close();
 			isr.close();
 			fis.close();
-			
-			json = this.convertObject(properties);
+			Object object = this.convertObject(properties, mapProperties);
+			json = (JSON)JSON.toJSON(object);
 		} catch (Exception e) {
 			this.logger.error("{}", e);
 			return null;
@@ -78,41 +100,50 @@ public class ApiMockServiceImpl implements ApiMockService{
 	/**
 	 * 根据属性配置生成对象
 	 * @param propertyConfigurations
+	 * @param mapProperties
 	 * @return
 	 */
-	private JSON convertObject(List<String> propertyConfigurations) throws Exception{
+	private Object convertObject(List<String> propertyConfigurations, Map<String, List<String>> mapProperties) throws Exception{
 		Map<String, Class<?>> propertyMap = new HashMap<String, Class<?>>();
 		Map<String, Object> valueMap = new HashMap<String, Object>();
 		//封装map
 		for (String property : propertyConfigurations) {
-			MockProperty mockProperty = this.convertProperty(property);
+			int confStart = property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER) + 1;
+			int confEnd = property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER);
+			String[] confs = property.substring(confStart, confEnd).split(ApplicationConstant.API_MOCK.PROP_CONF_SEPERATE_DELIMETER);
+			ApiPropertyType propertyType = ApiPropertyType.get(confs[0]);
+			String propertyName = property.substring(0, confStart - 1);
+			MockProperty mockProperty = null;
+			switch (propertyType) {
+				case MAP:
+					Object propertyValue = this.convertObject(mapProperties.get(propertyName), null);//TODO
+					mockProperty = this.convertProperty(propertyName, propertyType, confs, propertyValue);
+					valueMap.put(mockProperty.getPropertyName(), JSON.toJavaObject((JSON)JSON.toJSON(mockProperty.getValue()), Map.class));
+					break;
+				default:
+					mockProperty = this.convertProperty(propertyName, propertyType, confs, null);
+					valueMap.put(mockProperty.getPropertyName(), mockProperty.getValue());
+					break;
+			}
 			propertyMap.put(mockProperty.getPropertyName(), mockProperty.getClazz());
-			valueMap.put(mockProperty.getPropertyName(), mockProperty.getValue());
 		}
-		Object object = this.mockObject(propertyMap, valueMap);
-		return (JSON)JSON.toJSON(object);
+		return this.mockObject(propertyMap, valueMap);
 	}
 	
 	/**
 	 * confStr [type|value|约束条件]
 	 * property[int|value|min,max]
-	 * property[string|value|length]
+	 * property[string|value|length]，默认string，可以缺失
 	 * property[decimal|value|length,precision]
 	 * property[list|modelName|size]
 	 * property[model|modelName]
 	 * @param confStr
 	 * @return
 	 */
-	private MockProperty convertProperty(String confStr) {
+	private MockProperty convertProperty(String propertyName, ApiPropertyType propertyType, String[] confs, Object propertyValue) {
 		MockProperty mockProperty = new MockProperty();
 		try {
-			int confStart = confStr.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER) + 1;
-			int confEnd = confStr.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER);
-			String[] confs = confStr.substring(confStart, confEnd).split(ApplicationConstant.API_MOCK.PROP_CONF_SEPERATE_DELIMETER);
-			String propertyName = confStr.substring(0, confStart - 1);
 			mockProperty.setPropertyName(propertyName);;
-			
-			ApiPropertyType propertyType = ApiPropertyType.get(confs[0]);
 			switch (propertyType) {
 				case STRING:
 					mockProperty.setClazz(String.class);
@@ -126,6 +157,10 @@ public class ApiMockServiceImpl implements ApiMockService{
 					mockProperty.setClazz(BigDecimal.class);
 					mockProperty.setValue(this.mockPropertyValue(BigDecimal.class, convertFinalConfs(confs,5)));
 				break;
+				case MAP:
+					mockProperty.setClazz(Map.class);
+					mockProperty.setValue(propertyValue);
+					break;
 				case LIST:
 					mockProperty.setClazz(List.class);
 					//TODO
@@ -259,11 +294,28 @@ public class ApiMockServiceImpl implements ApiMockService{
 		Method[] methods = object.getClass().getDeclaredMethods();
 		for (Method method : methods) {
 			if (method.getName().startsWith("set")) {//setter方法
+				System.out.println(method.getName());
 				String propertyeName = WordUtils.uncapitalize(method.getName().substring("set".length()));
 				Object value = valueMap.get(propertyeName);
 				method.invoke(object, value);
 			}
 		}
 		return object;
+	}
+	
+	/**
+	 * 判断类型开始
+	 * @param str
+	 * @return
+	 */
+	private boolean mapStart(String str) {
+		String patternStr = "^@model_[A-Za-z]{1,}_start$";
+		Pattern pattern = Pattern.compile(patternStr);
+		return pattern.matcher(str).matches();
+	}
+	private boolean mapEnd(String str) {
+		String patternStr = "^@model_[A-Za-z]{1,}_end";
+		Pattern pattern = Pattern.compile(patternStr);
+		return pattern.matcher(str).matches();
 	}
 }
