@@ -13,14 +13,13 @@ YunWork 主要致力于mock服务，通过简单的mock方式，加快项目中�
 		字段需要支持类型 + 长度配置，避免随机生成的数据格式不正确。
 		
 		1、参数或者说明中，不可出现“=”
-		2、参数支持[类型|长度]描述。支持int（整数）、decimal（小数）、list（数组）、map（对象 可省略）、缺省省略为string
-			[type|约束条件]
-			age[float|5,2]=年龄
-			name=姓名
-			family[list].id=id
-			family[list].value=fadaf
-			position[map].comp=za
-			position[model|modelName]
+		2、参数支持
+			 * confStr [type|value|约束条件]
+	 * property[int|value|min,max]
+	 * property[string|value|length]
+	 * property[decimal|value|length,precision]
+	 * property[list|modelName|size]
+	 * property[model|modelName]
 		
 	-	java interface mock
 	-	dubbo service mock

@@ -94,10 +94,10 @@ public class ApiMockServiceImpl implements ApiMockService{
 	}
 	
 	/**
-	 * confStr [type|约束条件|value]
-	 * property[int|min,max|value]
-	 * property[string|length|value]
-	 * property[decimal|length,precision|value]
+	 * confStr [type|value|约束条件]
+	 * property[int|value|min,max]
+	 * property[string|value|length]
+	 * property[decimal|value|length,precision]
 	 * property[list|modelName|size]
 	 * property[model|modelName]
 	 * @param confStr
@@ -164,35 +164,35 @@ public class ApiMockServiceImpl implements ApiMockService{
 	@SuppressWarnings("unchecked")
 	private <T> T mockPropertyValue(Class<T> clazz, String... configurations) {
 		if (clazz.equals(Integer.class)) {//configurations = int,min, max, value
-			if (StringUtils.isNotEmpty(configurations[3])) {
-				return (T)Integer.valueOf(configurations[3]);
+			if (StringUtils.isNotEmpty(configurations[1])) {
+				return (T)Integer.valueOf(configurations[1]);
 			}else {
 				int min = 10000;//默认 10000 - 100000
 				int max = 100000;
-				if (StringUtils.isNotEmpty(configurations[1]) && StringUtils.isNotEmpty(configurations[2])) {
-					min = Integer.valueOf(configurations[1]);
-					max = Integer.valueOf(configurations[2]);
-				}else if (StringUtils.isNotEmpty(configurations[1]) && StringUtils.isEmpty(configurations[2])) {
-					min = Integer.valueOf(configurations[1]);
+				if (StringUtils.isNotEmpty(configurations[2]) && StringUtils.isNotEmpty(configurations[3])) {
+					min = Integer.valueOf(configurations[2]);
+					max = Integer.valueOf(configurations[3]);
+				}else if (StringUtils.isNotEmpty(configurations[2]) && StringUtils.isEmpty(configurations[3])) {
+					min = Integer.valueOf(configurations[2]);
 					max = min + max;
-				}else if (StringUtils.isEmpty(configurations[1]) && StringUtils.isNotEmpty(configurations[2])) {
-					max = Integer.valueOf(configurations[2]);
+				}else if (StringUtils.isEmpty(configurations[2]) && StringUtils.isNotEmpty(configurations[3])) {
+					max = Integer.valueOf(configurations[3]);
 					min = max - min > 0 ? max - min : 1;
 				}
 				Integer random = RandomUtils.nextInt(min, max);
 				return (T)random;
 			}
 		}else if (clazz.equals(BigDecimal.class)) {//configurations = deciaml,length, precision, value
-			if (StringUtils.isNotEmpty(configurations[3])) {
-				return (T)(new BigDecimal(configurations[3]));
+			if (StringUtils.isNotEmpty(configurations[1])) {
+				return (T)(new BigDecimal(configurations[1]));
 			}else {
 				int length = 7;
 				int precision = 2;
-				if (StringUtils.isNotEmpty(configurations[1])) {
-					length = Integer.valueOf(configurations[1]);
-				}
 				if (StringUtils.isNotEmpty(configurations[2])) {
-					precision = Integer.valueOf(configurations[2]);
+					length = Integer.valueOf(configurations[2]);
+				}
+				if (StringUtils.isNotEmpty(configurations[3])) {
+					precision = Integer.valueOf(configurations[3]);
 				}
 				StringBuilder builder = new StringBuilder();
 				int tmpInt_1 = 0;
@@ -209,10 +209,10 @@ public class ApiMockServiceImpl implements ApiMockService{
 				return (T)(new BigDecimal(builder.toString()));
 			}
 		}else if (clazz.equals(String.class)) {//configurations = string,length, value
-			if (StringUtils.isNotEmpty(configurations[2])) {
-				return (T)(String)(configurations[2]);
+			if (StringUtils.isNotEmpty(configurations[1])) {
+				return (T)(String)(configurations[1]);
 			}else {
-				return (T)this.randomString(StringUtils.isEmpty(configurations[1]) ? null : Integer.valueOf(configurations[1]));
+				return (T)this.randomString(StringUtils.isEmpty(configurations[2]) ? null : Integer.valueOf(configurations[2]));
 			}
 			
 		}
