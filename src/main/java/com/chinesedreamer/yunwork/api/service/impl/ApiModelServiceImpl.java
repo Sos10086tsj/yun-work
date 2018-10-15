@@ -26,7 +26,7 @@ public class ApiModelServiceImpl implements ApiModelService{
 		builder.append(this.apiConfig.getApiModelRootFolder());
 		for (String packageName : modelPackage) {
 			if (StringUtils.isNotEmpty(packageName)) {
-				builder.append(File.separator).append(packageName.trim());
+				builder.append(packageName.trim());
 			}
 		}
 		

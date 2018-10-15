@@ -14,6 +14,7 @@ YunWork 主要致力于mock服务，通过简单的mock方式，加快项目中�
 		
 		1、参数或者说明中，不可出现“=”
 		2、参数支持[类型|长度]描述。支持int（整数）、decimal（小数）、list（数组）、map（对象 可省略）、缺省省略为string
+			[type|约束条件]
 			age[float|5,2]=年龄
 			name=姓名
 			family[list].id=id

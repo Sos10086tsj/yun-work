@@ -17,28 +17,8 @@ public class ApiConfig {
 	 */
 	@Value("${api.model.template.encode}")
 	private String apiModelTemplateEncode;
-	
 	/**
-	 * 判断字段类型是否为list的正则表达式；
-	 * 示例：[list]
-	 */
-	@Value("${api.model.property.pattern.list}")
-	private String apiModelPropertyPatternList;
-	/**
-	 * 判断字段类型是否为list的正则表达式；
-	 * 示例：[map]
-	 */
-	@Value("${api.model.property.pattern.map}")
-	private String apiModelPropertyPatternMap;
-	/**
-	 * 判断字段类型是否为list的正则表达式；
-	 * 示例：[model|modelName]
-	 */
-	@Value("${api.model.property.pattern.model}")
-	private String apiModelPropertyPatternModel;
-	
-	/**
-	 * 字库，用逗号分隔
+	 * 字库
 	 */
 	@Value("${api.mock.word.library}")
 	private String apiMockWordLibrary;
@@ -60,30 +40,6 @@ public class ApiConfig {
 
 	public void setApiModelTemplateEncode(String apiModelTemplateEncode) {
 		this.apiModelTemplateEncode = apiModelTemplateEncode;
-	}
-
-	public String getApiModelPropertyPatternList() {
-		return apiModelPropertyPatternList;
-	}
-
-	public void setApiModelPropertyPatternList(String apiModelPropertyPatternList) {
-		this.apiModelPropertyPatternList = apiModelPropertyPatternList;
-	}
-
-	public String getApiModelPropertyPatternMap() {
-		return apiModelPropertyPatternMap;
-	}
-
-	public void setApiModelPropertyPatternMap(String apiModelPropertyPatternMap) {
-		this.apiModelPropertyPatternMap = apiModelPropertyPatternMap;
-	}
-
-	public String getApiModelPropertyPatternModel() {
-		return apiModelPropertyPatternModel;
-	}
-
-	public void setApiModelPropertyPatternModel(String apiModelPropertyPatternModel) {
-		this.apiModelPropertyPatternModel = apiModelPropertyPatternModel;
 	}
 
 	public String getApiMockWordLibrary() {
