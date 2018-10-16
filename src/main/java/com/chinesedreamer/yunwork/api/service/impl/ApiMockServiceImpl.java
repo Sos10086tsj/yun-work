@@ -114,39 +114,14 @@ public class ApiMockServiceImpl implements ApiMockService{
 			String propertyName = property.substring(0, property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
 			MockProperty mockProperty = null;
 			Object propertyValue = null;
-			Map<String, List<String>> tmpMapProperties = null;
 			switch (propertyType) {
 				case MAP:
-					if (mapProperties.containsKey(map_model_prefix + propertyName)) {
-						for (String tmpPropConf : mapProperties.get(map_model_prefix + propertyName)) {
-							String tmpPropertyName = tmpPropConf.substring(0, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
-							if (mapProperties.containsKey(map_model_prefix + tmpPropertyName)) {
-								if (null == tmpMapProperties) {
-									tmpMapProperties = new HashMap<String, List<String>>();
-								}
-								tmpMapProperties.put(map_model_prefix + tmpPropertyName, mapProperties.get(map_model_prefix + tmpPropertyName));
-							}
-						}
-					}
-					propertyValue = this.convertObject(mapProperties.get(map_model_prefix + propertyName), tmpMapProperties);
+					propertyValue = this.convertComplexProperty(mapProperties, propertyName, true);
 					mockProperty = this.convertProperty(propertyName, propertyType, confs, propertyValue);
 					valueMap.put(mockProperty.getPropertyName(), JSON.toJavaObject((JSON)JSON.toJSON(mockProperty.getValue()), Map.class));
 					break;
 				case MODEL:
-					if (mapProperties.containsKey(map_model_prefix + confs[1])) {//如果当前配置文件命中model名称，优先
-						for (String tmpPropConf : mapProperties.get(map_model_prefix + confs[1])) {
-							String tmpPropertyName = tmpPropConf.substring(0, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
-							if (mapProperties.containsKey(map_model_prefix + tmpPropertyName)) {
-								if (null == tmpMapProperties) {
-									tmpMapProperties = new HashMap<String, List<String>>();
-								}
-								tmpMapProperties.put(map_model_prefix + tmpPropertyName, mapProperties.get(map_model_prefix + tmpPropertyName));
-							}
-						}
-						propertyValue = this.convertObject(mapProperties.get(map_model_prefix + confs[1]), tmpMapProperties);
-					}else {
-						propertyValue = this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelTmpFolder() + confs[1] + ".tmp"));
-					}
+					propertyValue = this.convertComplexProperty(mapProperties, confs[1], false);
 					mockProperty = new MockProperty();
 					mockProperty.setPropertyName(propertyName);
 					mockProperty.setClazz(Map.class);
@@ -162,20 +137,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 						size = RandomUtils.nextInt(1, 10);
 					}
 					for (int i = 0; i < size; i++) {
-						if (mapProperties.containsKey(map_model_prefix + confs[1])) {//如果当前配置文件命中model名称，优先
-							for (String tmpPropConf : mapProperties.get(map_model_prefix + confs[1])) {
-								String tmpPropertyName = tmpPropConf.substring(0, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
-								if (mapProperties.containsKey(map_model_prefix + tmpPropertyName)) {
-									if (null == tmpMapProperties) {
-										tmpMapProperties = new HashMap<String, List<String>>();
-									}
-									tmpMapProperties.put(map_model_prefix + tmpPropertyName, mapProperties.get(map_model_prefix + tmpPropertyName));
-								}
-							}
-							list.add(this.convertObject(mapProperties.get(map_model_prefix + confs[1]), tmpMapProperties));
-						}else {
-							list.add(this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelTmpFolder() + confs[1] + ".tmp")));
-						}
+						list.add(this.convertComplexProperty(mapProperties, confs[1], false));
 					}
 					mockProperty = new MockProperty();
 					mockProperty.setPropertyName(propertyName);
@@ -241,6 +203,30 @@ public class ApiMockServiceImpl implements ApiMockService{
 			this.logger.error("{}", e);
 		}
 		return mockProperty;
+	}
+	
+	private Object convertComplexProperty(Map<String, List<String>> mapProperties, String modelName, boolean modelIsProperty) throws Exception{
+		Object propertyValue = null;
+		Map<String, List<String>> tmpMapProperties = null;
+		boolean tmpContainModel = false;
+		if (mapProperties.containsKey(map_model_prefix + modelName)) {	
+			tmpContainModel = true;
+			for (String tmpPropConf : mapProperties.get(map_model_prefix + modelName)) {
+				String tmpPropertyName = tmpPropConf.substring(0, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
+				if (mapProperties.containsKey(map_model_prefix + tmpPropertyName)) {
+					if (null == tmpMapProperties) {
+						tmpMapProperties = new HashMap<String, List<String>>();
+					}
+					tmpMapProperties.put(map_model_prefix + tmpPropertyName, mapProperties.get(map_model_prefix + tmpPropertyName));
+				}
+			}			
+		}
+		if (!tmpContainModel && !modelIsProperty) {//不是属性model，且配置文件不包含model定义
+			propertyValue = this.mockData(new ApiModel(modelName, this.apiConfig.getApiModelTmpFolder() + modelName + ".tmp"));
+		}else {
+			propertyValue = this.convertObject(mapProperties.get(map_model_prefix + modelName), tmpMapProperties);
+		}
+		return propertyValue;
 	}
 	
 	private String[] convertFinalConfs(String[] confs, int size) {
