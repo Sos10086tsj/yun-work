@@ -1,5 +1,7 @@
 package com.chinesedreamer.yunwork.api.controller;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,5 +45,11 @@ public class ApiController {
 		JSONObject jo = new JSONObject();
 		jo.put("message", message);
 		return (JSON)jo;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "tmp/list")
+	public List<ApiModel> getTemplateList(String modelName){
+		return this.apiModelService.getTemplateList(modelName);
 	}
 }

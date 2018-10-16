@@ -1,5 +1,7 @@
 package com.chinesedreamer.yunwork.api.controller;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,6 +12,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alibaba.fastjson.JSON;
+import com.chinesedreamer.yunwork.api.model.ApiModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,4 +30,13 @@ public class ApiControllerTest {
 		System.out.println("********** end **********");
 	}
 
+	@Test
+	public void testTemplateList() {
+		System.out.println("********** start **********");
+		List<ApiModel> apiModels = this.apiController.getTemplateList("");
+		for (ApiModel apiModel : apiModels) {
+			System.out.println(JSON.toJSONString(apiModel));
+		}
+		System.out.println("********** end **********");
+	}
 }
