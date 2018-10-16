@@ -22,6 +22,9 @@ public class ApiConfig {
 	 */
 	@Value("${api.mock.word.library}")
 	private String apiMockWordLibrary;
+	
+	@Value("${api.model.tmp.folder}")
+	private String apiModelTmpFolder;
 
 	public String getApiModelRootFolder() {
 		return apiModelRootFolder;
@@ -48,6 +51,14 @@ public class ApiConfig {
 
 	public void setApiMockWordLibrary(String apiMockWordLibrary) {
 		this.apiMockWordLibrary = apiMockWordLibrary;
+	}
+
+	public String getApiModelTmpFolder() {
+		return apiModelTmpFolder;
+	}
+
+	public void setApiModelTmpFolder(String apiModelTmpFolder) {
+		this.apiModelTmpFolder = apiModelTmpFolder;
 	}
 
 }

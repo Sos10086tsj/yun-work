@@ -24,9 +24,9 @@ public class ApiMockServiceImplTest {
 		ApiModel model = new ApiModel();
 		model.setModelName("test");
 		model.setTemplatePath("/Users/paris/Desktop/data/yunwork/tmp/temp_test_1.tmp");
-		JSON json = this.apiMockService.mockData(model);
+		Object json = this.apiMockService.mockData(model);
 		System.out.println("********** json ***********");
-		System.out.println(json.toJSONString());
+		System.out.println(JSON.toJSONString(json));
 		System.err.println("********** end ***********");
 	}
 

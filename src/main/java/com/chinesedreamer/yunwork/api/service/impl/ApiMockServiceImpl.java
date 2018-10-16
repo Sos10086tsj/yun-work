@@ -40,7 +40,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 	@Resource
 	private ApiConfig apiConfig;
 	@Override
-	public JSON mockData(ApiModel model) {
+	public Object mockData(ApiModel model) {
 		//	1.	读取文件
 		File templateFile = new File(model.getTemplatePath());
 		//	2.	解析不同节点，并根据生成器生产内容
@@ -52,8 +52,8 @@ public class ApiMockServiceImpl implements ApiMockService{
 	 * @param templateFile
 	 * @return
 	 */
-	private JSON mockTemplateData(File templateFile) {
-		JSON json = null;
+	private Object mockTemplateData(File templateFile) {
+		Object object = null;
 		try {
 			List<String> properties = new ArrayList<String>();
 			FileInputStream fis = new FileInputStream(templateFile);
@@ -89,13 +89,12 @@ public class ApiMockServiceImpl implements ApiMockService{
 			br.close();
 			isr.close();
 			fis.close();
-			Object object = this.convertObject(properties, mapProperties);
-			json = (JSON)JSON.toJSON(object);
+			object = this.convertObject(properties, mapProperties);
 		} catch (Exception e) {
 			this.logger.error("{}", e);
 			return null;
 		}
-		return json;
+		return object;
 	}
 	
 	/**
@@ -113,6 +112,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 			ApiPropertyType propertyType = ApiPropertyType.get(confs[0]);
 			String propertyName = property.substring(0, property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
 			MockProperty mockProperty = null;
+			Object propertyValue = null;
 			switch (propertyType) {
 				case MAP:
 					Map<String, List<String>> tmpMapProperties = null;
@@ -127,8 +127,12 @@ public class ApiMockServiceImpl implements ApiMockService{
 							}
 						}
 					}
-					Object propertyValue = this.convertObject(mapProperties.get(map_model_prefix + propertyName), tmpMapProperties);
+					propertyValue = this.convertObject(mapProperties.get(map_model_prefix + propertyName), tmpMapProperties);
 					mockProperty = this.convertProperty(propertyName, propertyType, confs, propertyValue);
+					valueMap.put(mockProperty.getPropertyName(), JSON.toJavaObject((JSON)JSON.toJSON(mockProperty.getValue()), Map.class));
+					break;
+				case MODEL:
+					mockProperty = this.convertModel(propertyName, confs);
 					valueMap.put(mockProperty.getPropertyName(), JSON.toJavaObject((JSON)JSON.toJSON(mockProperty.getValue()), Map.class));
 					break;
 				default:
@@ -184,7 +188,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 				break;
 				case MODEL:
 					mockProperty.setClazz(Class.forName(confs[2]));
-					//TODO
+					mockProperty.setValue(this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelRootFolder() + confs[1].replaceAll(".", File.separator) + ".tmp")));
 				break;
 				default:
 				break;
@@ -192,6 +196,15 @@ public class ApiMockServiceImpl implements ApiMockService{
 		} catch (Exception e) {
 			this.logger.error("{}", e);
 		}
+		return mockProperty;
+	}
+	
+	private MockProperty convertModel(String propertyName, String[] confs) {
+		MockProperty mockProperty = new MockProperty();
+		mockProperty.setPropertyName(propertyName);
+		Object value = this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelTmpFolder() + confs[1] + ".tmp"));
+		mockProperty.setValue(value);
+		mockProperty.setClazz(Map.class);
 		return mockProperty;
 	}
 	

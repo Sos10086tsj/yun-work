@@ -30,7 +30,7 @@ public class ApiController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "mockData")
-	public JSON getMockData(HttpServletRequest request, @RequestParam String modelName){
+	public Object getMockData(HttpServletRequest request, @RequestParam String modelName){
 		//1. 校验model是否存在
 		ApiModel model = this.apiModelService.isModelExist(modelName);
 		if (null == model) {
