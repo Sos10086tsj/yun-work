@@ -4,7 +4,6 @@ import java.io.File;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,14 +20,13 @@ public class ApiModelServiceImpl implements ApiModelService{
 	@Override
 	public ApiModel isModelExist(String modelName) {
 		//1. 获取模板文件
-		String[] modelPackage = modelName.split(".");
+		String[] modelPackage = modelName.split("\\.");
 		StringBuilder builder = new StringBuilder();
-		builder.append(this.apiConfig.getApiModelRootFolder());
-		for (String packageName : modelPackage) {
-			if (StringUtils.isNotEmpty(packageName)) {
-				builder.append(packageName.trim());
-			}
+		builder.append(this.apiConfig.getApiModelTmpFolder());
+		for (int i = 0; i < modelPackage.length - 2; i++) {
+			builder.append(modelPackage[i]).append(File.separator);
 		}
+		builder.append(modelPackage[modelPackage.length - 2]).append(".").append(modelPackage[modelPackage.length - 1]);
 		
 		String templatePath = builder.toString();
 		File templateFile = new File(templatePath);
