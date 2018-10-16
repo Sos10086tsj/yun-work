@@ -113,9 +113,9 @@ public class ApiMockServiceImpl implements ApiMockService{
 			String propertyName = property.substring(0, property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
 			MockProperty mockProperty = null;
 			Object propertyValue = null;
+			Map<String, List<String>> tmpMapProperties = null;
 			switch (propertyType) {
 				case MAP:
-					Map<String, List<String>> tmpMapProperties = null;
 					if (mapProperties.containsKey(map_model_prefix + propertyName)) {
 						for (String tmpPropConf : mapProperties.get(map_model_prefix + propertyName)) {
 							String tmpPropertyName = tmpPropConf.substring(0, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
@@ -132,7 +132,24 @@ public class ApiMockServiceImpl implements ApiMockService{
 					valueMap.put(mockProperty.getPropertyName(), JSON.toJavaObject((JSON)JSON.toJSON(mockProperty.getValue()), Map.class));
 					break;
 				case MODEL:
-					mockProperty = this.convertModel(propertyName, confs);
+					if (mapProperties.containsKey(map_model_prefix + propertyName)) {//如果当前配置文件命中model名称，优先
+						for (String tmpPropConf : mapProperties.get(map_model_prefix + propertyName)) {
+							String tmpPropertyName = tmpPropConf.substring(0, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
+							if (mapProperties.containsKey(map_model_prefix + tmpPropertyName)) {
+								if (null == tmpMapProperties) {
+									tmpMapProperties = new HashMap<String, List<String>>();
+								}
+								tmpMapProperties.put(map_model_prefix + tmpPropertyName, mapProperties.get(map_model_prefix + tmpPropertyName));
+							}
+						}
+						propertyValue = this.convertObject(mapProperties.get(map_model_prefix + propertyName), tmpMapProperties);
+					}else {
+						propertyValue = this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelTmpFolder() + confs[1] + ".tmp"));
+					}
+					mockProperty = new MockProperty();
+					mockProperty.setPropertyName(propertyName);
+					mockProperty.setClazz(Map.class);
+					mockProperty.setValue(propertyValue);
 					valueMap.put(mockProperty.getPropertyName(), JSON.toJavaObject((JSON)JSON.toJSON(mockProperty.getValue()), Map.class));
 					break;
 				default:
@@ -196,15 +213,6 @@ public class ApiMockServiceImpl implements ApiMockService{
 		} catch (Exception e) {
 			this.logger.error("{}", e);
 		}
-		return mockProperty;
-	}
-	
-	private MockProperty convertModel(String propertyName, String[] confs) {
-		MockProperty mockProperty = new MockProperty();
-		mockProperty.setPropertyName(propertyName);
-		Object value = this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelTmpFolder() + confs[1] + ".tmp"));
-		mockProperty.setValue(value);
-		mockProperty.setClazz(Map.class);
 		return mockProperty;
 	}
 	
