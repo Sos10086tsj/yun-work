@@ -12,6 +12,8 @@ public interface ApiModelService {
 	 */
 	public ApiModel isModelExist(String modelName);
 	
+	public String getModel(String modelName);
+	
 	public void saveTemplateFolder(String templateName);
 	
 	/**

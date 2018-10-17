@@ -72,4 +72,14 @@ public class ApiModelServiceImpl implements ApiModelService{
 			templateFile.mkdirs();
 		}
 	}
+	@Override
+	public String getModel(String modelName) {
+		String templatePath = this.apiConfig.getApiModelTmpFolder() + modelName;
+		try {
+			return FileUtils.readFileToString(new File(templatePath));
+		} catch (IOException e) {
+			this.logger.error("{}", e);
+			return null;
+		}
+	}
 }

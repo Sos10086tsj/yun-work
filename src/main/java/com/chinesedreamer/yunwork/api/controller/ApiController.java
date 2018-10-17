@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,7 +100,7 @@ public class ApiController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "tmp/model/save")
-	public void saveModelTemplate(@PathParam("modelName")String modelName, @PathParam("templateContent")String templateContent){
+	public void saveModelTemplate(@RequestParam("modelName")String modelName, @RequestParam("templateContent")String templateContent){
 		this.apiModelService.saveTemplate(modelName, templateContent);
 	}
 	
@@ -111,7 +110,13 @@ public class ApiController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "tmp/save")
-	public void saveTemplate(@PathParam("templateName")String templateName){
+	public void saveTemplate(@RequestParam("templateName")String templateName){
 		this.apiModelService.saveTemplateFolder(templateName);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "tmp/model/get")
+	public String getModel(@RequestParam("modelName") String modelName){
+		return this.apiModelService.getModel(modelName);
 	}
 }
