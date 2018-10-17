@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alibaba.fastjson.JSON;
 import com.chinesedreamer.yunwork.api.model.ApiModel;
+import com.chinesedreamer.yunwork.api.vo.ApiModelTreeNodelVo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -33,10 +34,8 @@ public class ApiControllerTest {
 	@Test
 	public void testTemplateList() {
 		System.out.println("********** start **********");
-		List<ApiModel> apiModels = this.apiController.getTemplateList("");
-		for (ApiModel apiModel : apiModels) {
-			System.out.println(JSON.toJSONString(apiModel));
-		}
+		ApiModelTreeNodelVo treeNodelVo = this.apiController.getTemplateList("");
+		System.out.println(JSON.toJSONString(treeNodelVo));
 		System.out.println("********** end **********");
 	}
 }

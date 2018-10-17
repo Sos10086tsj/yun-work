@@ -18,4 +18,17 @@ public interface ApiModelService {
 	 * @return
 	 */
 	public List<ApiModel> getTemplateList(String modelName);
+	
+	/**
+	 * 保存模板
+	 * @param modelName
+	 * @param template
+	 */
+	public void saveTemplate(String modelName, String template);
+	/**
+	 * 更新模板
+	 * @param modelName
+	 * @param template
+	 */
+	public void updateTemplate(String modelName, String template);
 }

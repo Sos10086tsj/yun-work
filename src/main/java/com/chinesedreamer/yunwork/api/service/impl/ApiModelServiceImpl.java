@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.chinesedreamer.yunwork.api.config.ApiConfig;
+import com.chinesedreamer.yunwork.api.config.ApplicationConstant;
 import com.chinesedreamer.yunwork.api.model.ApiModel;
 import com.chinesedreamer.yunwork.api.service.ApiModelService;
 
@@ -54,11 +55,13 @@ public class ApiModelServiceImpl implements ApiModelService{
 				if (templatePath.contains(modelName)) {
 					ApiModel apiModel = new ApiModel();
 					apiModel.setModelName(templatePath);
+					apiModel.setTemplatePath(templatePath);
 					apiModels.add(apiModel);
 				}
 			}else {
 				ApiModel apiModel = new ApiModel();
 				apiModel.setModelName(templatePath);
+				apiModel.setTemplatePath(templatePath);
 				apiModels.add(apiModel);
 			}
 			
@@ -72,9 +75,19 @@ public class ApiModelServiceImpl implements ApiModelService{
 				this.addFile(filePaths, subFile);
 			}
 		}else {
-			if (file.getName().endsWith(".tmp")) {
+			if (file.getName().endsWith(ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN)) {
 				filePaths.add(file.getPath());
 			}
 		}
+	}
+	@Override
+	public void saveTemplate(String modelName, String template) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateTemplate(String modelName, String template) {
+		// TODO Auto-generated method stub
+		
 	}
 }

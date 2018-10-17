@@ -194,7 +194,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 					break;
 				case MODEL:
 					mockProperty.setClazz(Class.forName(confs[2]));
-					mockProperty.setValue(this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelRootFolder() + confs[1].replaceAll(".", File.separator) + ".tmp")));
+					mockProperty.setValue(this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelRootFolder() + confs[1].replaceAll(".", File.separator) + ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN)));
 				break;
 				default:
 				break;
@@ -222,7 +222,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 			}			
 		}
 		if (!tmpContainModel && !modelIsProperty) {//不是属性model，且配置文件不包含model定义
-			propertyValue = this.mockData(new ApiModel(modelName, this.apiConfig.getApiModelTmpFolder() + modelName + ".tmp"));
+			propertyValue = this.mockData(new ApiModel(modelName, this.apiConfig.getApiModelTmpFolder() + modelName + ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN));
 		}else {
 			propertyValue = this.convertObject(mapProperties.get(map_model_prefix + modelName), tmpMapProperties);
 		}
