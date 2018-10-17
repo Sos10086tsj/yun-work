@@ -5,7 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource(value = {"classpath:config/api/api-config.properties"}, ignoreResourceNotFound=true, encoding="utf-8")
+@PropertySource(value = {"classpath:config/api/api-config-${spring.profiles.active}.properties"}, ignoreResourceNotFound=true, encoding="utf-8")
 public class ApiConfig {
 	/**
 	 * model template 根目录

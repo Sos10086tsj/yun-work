@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
@@ -21,7 +20,8 @@ import com.chinesedreamer.yunwork.api.service.ApiMockService;
 import com.chinesedreamer.yunwork.api.service.ApiModelService;
 import com.chinesedreamer.yunwork.api.vo.ApiModelTreeNodelVo;
 
-@RestController(value = "api")
+@RestController
+@RequestMapping(value = "api")
 public class ApiController {
 	
 	@Resource
@@ -35,7 +35,6 @@ public class ApiController {
 	 * @param modelName
 	 * @return
 	 */
-	@ResponseBody
 	@RequestMapping(value = "mockData")
 	public Object getMockData(HttpServletRequest request, @RequestParam String modelName){
 		//1. 校验model是否存在
@@ -57,7 +56,6 @@ public class ApiController {
 	 * @param modelName
 	 * @return
 	 */
-	@ResponseBody
 	@RequestMapping(value = "tmp/list")
 	public ApiModelTreeNodelVo getTemplateList(String folderName){
 		ApiModelTreeNodelVo vo = new ApiModelTreeNodelVo();
@@ -98,7 +96,6 @@ public class ApiController {
 	 * @param modelName
 	 * @param templateContent
 	 */
-	@ResponseBody
 	@RequestMapping(value = "tmp/model/save")
 	public void saveModelTemplate(@RequestParam("modelName")String modelName, @RequestParam("templateContent")String templateContent){
 		this.apiModelService.saveTemplate(modelName, templateContent);
@@ -108,13 +105,11 @@ public class ApiController {
 	 * 保存模板路径
 	 * @param templateName
 	 */
-	@ResponseBody
 	@RequestMapping(value = "tmp/save")
 	public void saveTemplate(@RequestParam("templateName")String templateName){
 		this.apiModelService.saveTemplateFolder(templateName);
 	}
 	
-	@ResponseBody
 	@RequestMapping(value = "tmp/model/get")
 	public String getModel(@RequestParam("modelName") String modelName){
 		return this.apiModelService.getModel(modelName);

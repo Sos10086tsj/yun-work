@@ -40,15 +40,18 @@ public class ApiModelServiceImpl implements ApiModelService{
 		List<ApiModel> apiModels = new ArrayList<ApiModel>();
 		File folder = new File(this.apiConfig.getApiModelTmpFolder() + (StringUtils.isEmpty(folderName) ? "" : folderName));
 		
-		for (File file : folder.listFiles()) {
-			if (file.isDirectory() || file.getName().endsWith(ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN)) {
-				ApiModel apiModel = new ApiModel();
-				apiModel.setModelName(file.getName());
-				String path = file.getPath().substring(this.apiConfig.getApiModelTmpFolder().length());
-				apiModel.setTemplatePath(path);
-				apiModels.add(apiModel);
+		if (folder.exists()) {
+			for (File file : folder.listFiles()) {
+				if (file.isDirectory() || file.getName().endsWith(ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN)) {
+					ApiModel apiModel = new ApiModel();
+					apiModel.setModelName(file.getName());
+					String path = file.getPath().substring(this.apiConfig.getApiModelTmpFolder().length());
+					apiModel.setTemplatePath(path);
+					apiModels.add(apiModel);
+				}
 			}
 		}
+		
 		return apiModels;
 	}
 	
