@@ -38,42 +38,20 @@ public class ApiModelServiceImpl implements ApiModelService{
 	@Override
 	public List<ApiModel> getTemplateList(String folderName) {
 		List<ApiModel> apiModels = new ArrayList<ApiModel>();
-		File folder = new File(this.apiConfig.getApiModelTmpFolder());
-		List<String> filePaths = new ArrayList<String>();
+		File folder = new File(this.apiConfig.getApiModelTmpFolder() + (StringUtils.isEmpty(folderName) ? "" : folderName));
+		
 		for (File file : folder.listFiles()) {
-			this.addFile(filePaths, file);
-		}
-		for (String filePath : filePaths) {
-			String templatePath = filePath.substring(folder.getPath().length() + 1);
-			if (StringUtils.isNotEmpty(folderName)) {
-				if (templatePath.startsWith(folderName)) {
-					ApiModel apiModel = new ApiModel();
-					apiModel.setModelName(templatePath.substring(templatePath.lastIndexOf(File.separator) + 1));
-					apiModel.setTemplatePath(templatePath);
-					apiModels.add(apiModel);
-				}
-			}else {
+			if (file.isDirectory() || file.getName().endsWith(ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN)) {
 				ApiModel apiModel = new ApiModel();
-				apiModel.setModelName(templatePath.substring(templatePath.lastIndexOf(File.separator) + 1));
-				apiModel.setTemplatePath(templatePath);
+				apiModel.setModelName(file.getName());
+				String path = file.getPath().substring(this.apiConfig.getApiModelTmpFolder().length());
+				apiModel.setTemplatePath(path);
 				apiModels.add(apiModel);
 			}
-			
 		}
 		return apiModels;
 	}
-
-	private void addFile(List<String> filePaths, File file) {
-		if (file.isDirectory()) {
-			for (File subFile : file.listFiles()) {
-				this.addFile(filePaths, subFile);
-			}
-		}else {
-			if (file.getName().endsWith(ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN)) {
-				filePaths.add(file.getPath());
-			}
-		}
-	}
+	
 	@Override
 	public void saveTemplate(String modelName, String templateContent) {
 		try {

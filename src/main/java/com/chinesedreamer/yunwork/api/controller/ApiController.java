@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chinesedreamer.yunwork.api.config.ApplicationConstant;
 import com.chinesedreamer.yunwork.api.model.ApiModel;
 import com.chinesedreamer.yunwork.api.service.ApiMockService;
 import com.chinesedreamer.yunwork.api.service.ApiModelService;
@@ -70,7 +71,7 @@ public class ApiController {
 				String[] dept = apiModel.getTemplatePath().substring(index).split(File.separator);
 				ApiModelTreeNodelVo tmpVo = vo;
 				for (int i = 0; i < dept.length ; i++) {
-					if (i == dept.length - 1) {
+					if (apiModel.getModelName().endsWith(ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN)) {
 						ApiModelTreeNodelVo node = new ApiModelTreeNodelVo();
 						node.setModelName(dept[i]);
 						node.setModelPath(apiModel.getTemplatePath());
@@ -80,27 +81,12 @@ public class ApiController {
 						tmpVo.getSubNode().add(node);
 					}else {
 						ApiModelTreeNodelVo node = new ApiModelTreeNodelVo();
-						node.setFolderPath(StringUtils.isEmpty(folderName) ? "" : folderName + dept[i] + File.separator);
+						node.setFolderPath((StringUtils.isEmpty(folderName) ? "" : folderName ) + dept[i] + File.separator);
 						node.setFolderName(dept[i]);
-						if (null == tmpVo.getSubNode()) {
-							tmpVo.setSubNode(new ArrayList<ApiModelTreeNodelVo>());
-							tmpVo.getSubNode().add(node);
-							tmpVo = tmpVo.getSubNode().get(0);
-						}else {
-							boolean exist = false;
-							for (int j = 0; j < tmpVo.getSubNode().size(); j++) {
-								ApiModelTreeNodelVo nodelVo = tmpVo.getSubNode().get(j);
-								if (nodelVo.getFolderName().equalsIgnoreCase(dept[i])) {
-									tmpVo = nodelVo;
-									exist = true;
-									break;
-								}
-							}
-							if (!exist) {
-								tmpVo.getSubNode().add(node);
-								tmpVo = tmpVo.getSubNode().get(tmpVo.getSubNode().size() - 1);
-							}
+						if (null == vo.getSubNode()) {
+							vo.setSubNode(new ArrayList<ApiModelTreeNodelVo>());
 						}
+						vo.getSubNode().add(node);
 					}
 				}
 			});

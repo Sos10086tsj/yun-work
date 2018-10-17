@@ -31,7 +31,7 @@ public class ApiControllerTest {
 	@Test
 	public void testTemplateList() {
 		System.out.println("********** start **********");
-		ApiModelTreeNodelVo treeNodelVo = this.apiController.getTemplateList("");
+		ApiModelTreeNodelVo treeNodelVo = this.apiController.getTemplateList("aaa/bbb/");
 		System.out.println(JSON.toJSONString(treeNodelVo));
 		System.out.println("********** end **********");
 	}
