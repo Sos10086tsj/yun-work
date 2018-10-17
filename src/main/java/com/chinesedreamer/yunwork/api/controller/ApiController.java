@@ -116,12 +116,7 @@ public class ApiController {
 	@ResponseBody
 	@RequestMapping(value = "tmp/model/save")
 	public void saveModelTemplate(@PathParam("modelName")String modelName, @PathParam("templateContent")String templateContent){
-		ApiModel model = this.apiModelService.isModelExist(modelName);
-		if (null == model) {
-			this.apiModelService.saveTemplate(modelName, templateContent);
-		}else {
-			this.apiModelService.updateTemplate(modelName, templateContent);
-		}
+		this.apiModelService.saveTemplate(modelName, templateContent);
 	}
 	
 	/**
@@ -131,6 +126,6 @@ public class ApiController {
 	@ResponseBody
 	@RequestMapping(value = "tmp/save")
 	public void saveTemplate(@PathParam("templateName")String templateName){
-		this.apiModelService.saveTemplateFolde(templateName);
+		this.apiModelService.saveTemplateFolder(templateName);
 	}
 }

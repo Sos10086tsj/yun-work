@@ -1,11 +1,13 @@
 package com.chinesedreamer.yunwork.api.service.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,20 +75,16 @@ public class ApiModelServiceImpl implements ApiModelService{
 		}
 	}
 	@Override
-	public void saveTemplate(String modelName, String template) {
-		// TODO Auto-generated method stub
-		System.out.println("modelName:" + modelName);
-		System.out.println("template:" + template);
-	}
-	@Override
-	public void updateTemplate(String modelName, String template) {
-		// TODO Auto-generated method stub
-		System.out.println("modelName:" + modelName);
-		System.out.println("template:" + template);
+	public void saveTemplate(String modelName, String templateContent) {
+		try {
+			FileUtils.writeStringToFile(new File(this.apiConfig.getApiModelTmpFolder() + modelName), templateContent, ApplicationConstant.SYS.DEFAULT_ENCODING, false);
+		} catch (IOException e) {
+			this.logger.error("{}", e);
+		}
 	}
 	
 	@Override
-	public void saveTemplateFolde(String templateName) {
+	public void saveTemplateFolder(String templateName) {
 		if (!templateName.endsWith(File.separator)) {
 			templateName = templateName + File.separator;
 		}

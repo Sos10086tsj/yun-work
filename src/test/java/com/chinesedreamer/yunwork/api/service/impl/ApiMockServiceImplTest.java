@@ -23,11 +23,10 @@ public class ApiMockServiceImplTest {
 		System.err.println("********** start ***********");
 		ApiModel model = new ApiModel();
 		model.setModelName("test");
-		model.setTemplatePath("/Users/paris/Desktop/data/yunwork/tmp/temp_test_1.tmp");
+		model.setTemplatePath("/Users/paris/Desktop/data/yunwork/tmp/aaa/bbb/ccc/test_1539745389512.tmp");
 		Object json = this.apiMockService.mockData(model);
 		System.out.println("********** json ***********");
 		System.out.println(JSON.toJSONString(json));
 		System.err.println("********** end ***********");
 	}
-
 }

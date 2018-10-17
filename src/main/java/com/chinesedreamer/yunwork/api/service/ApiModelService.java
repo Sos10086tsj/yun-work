@@ -12,7 +12,7 @@ public interface ApiModelService {
 	 */
 	public ApiModel isModelExist(String modelName);
 	
-	public void saveTemplateFolde(String templateName);
+	public void saveTemplateFolder(String templateName);
 	
 	/**
 	 * 获取配置文件列表
@@ -24,13 +24,7 @@ public interface ApiModelService {
 	/**
 	 * 保存模板
 	 * @param modelName
-	 * @param template
+	 * @param templateContent
 	 */
-	public void saveTemplate(String modelName, String template);
-	/**
-	 * 更新模板
-	 * @param modelName
-	 * @param template
-	 */
-	public void updateTemplate(String modelName, String template);
+	public void saveTemplate(String modelName, String templateContent);
 }
