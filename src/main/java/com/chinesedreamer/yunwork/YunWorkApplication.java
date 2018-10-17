@@ -9,7 +9,9 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class YunWorkApplication extends SpringBootServletInitializer{
 
 	public static void main(String[] args) {
-		SpringApplication.run(YunWorkApplication.class, args);
+		SpringApplication springApplication = new SpringApplication(YunWorkApplication.class);
+		springApplication.addListeners(new ApplicationStartup());
+		springApplication.run(args);
 	}
 	
 	@Override//为了打包springboot项目

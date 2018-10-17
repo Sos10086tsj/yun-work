@@ -144,9 +144,9 @@
 			</activation>
 		</profile>
 		<profile>
-			<id>test</id>
+			<id>hf210</id>
 			<properties>
-				<activatedProperties>test</activatedProperties>
+				<activatedProperties>hf210</activatedProperties>
 			</properties>
 		</profile>
 	</profiles>
