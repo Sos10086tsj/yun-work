@@ -146,7 +146,7 @@
 		<profile>
 			<id>hf210</id>
 			<properties>
-				<activatedProperties>hf210</activatedProperties>
+				<activatedProperties>hf201</activatedProperties>
 			</properties>
 		</profile>
 	</profiles>
