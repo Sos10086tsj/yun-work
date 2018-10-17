@@ -108,14 +108,29 @@ public class ApiController {
 		return vo;
 	}
 	
+	/**
+	 * 保存、更新模板
+	 * @param modelName
+	 * @param templateContent
+	 */
 	@ResponseBody
-	@RequestMapping(value = "tmp/save")
-	public void saveTemplate(@PathParam("modelName")String modelName, @PathParam("templateContent")String templateContent){
+	@RequestMapping(value = "tmp/model/save")
+	public void saveModelTemplate(@PathParam("modelName")String modelName, @PathParam("templateContent")String templateContent){
 		ApiModel model = this.apiModelService.isModelExist(modelName);
 		if (null == model) {
 			this.apiModelService.saveTemplate(modelName, templateContent);
 		}else {
 			this.apiModelService.updateTemplate(modelName, templateContent);
 		}
+	}
+	
+	/**
+	 * 保存模板路径
+	 * @param templateName
+	 */
+	@ResponseBody
+	@RequestMapping(value = "tmp/save")
+	public void saveTemplate(@PathParam("templateName")String templateName){
+		this.apiModelService.saveTemplateFolde(templateName);
 	}
 }

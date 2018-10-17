@@ -35,4 +35,11 @@ public class ApiControllerTest {
 		System.out.println(JSON.toJSONString(treeNodelVo));
 		System.out.println("********** end **********");
 	}
+	
+	@Test
+	public void testSaveTemplate() {
+		System.out.println("********** start **********");
+		this.apiController.saveTemplate("aaa/bbb/ccc");
+		System.out.println("********** end **********");
+	}
 }

@@ -12,6 +12,8 @@ public interface ApiModelService {
 	 */
 	public ApiModel isModelExist(String modelName);
 	
+	public void saveTemplateFolde(String templateName);
+	
 	/**
 	 * 获取配置文件列表
 	 * @param modelName

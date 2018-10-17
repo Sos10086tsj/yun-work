@@ -24,14 +24,6 @@ public class ApiModelServiceImpl implements ApiModelService{
 	@Override
 	public ApiModel isModelExist(String modelName) {
 		//1. 获取模板文件
-//		String[] modelPackage = modelName.split("\\.");
-//		StringBuilder builder = new StringBuilder();
-//		builder.append(this.apiConfig.getApiModelTmpFolder());
-//		for (int i = 0; i < modelPackage.length - 2; i++) {
-//			builder.append(modelPackage[i]).append(File.separator);
-//		}
-//		builder.append(modelPackage[modelPackage.length - 2]).append(".").append(modelPackage[modelPackage.length - 1]);
-//		
 		String templatePath = this.apiConfig.getApiModelTmpFolder() + modelName;
 		File templateFile = new File(templatePath);
 		if (!templateFile.exists()) {
@@ -83,11 +75,25 @@ public class ApiModelServiceImpl implements ApiModelService{
 	@Override
 	public void saveTemplate(String modelName, String template) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("modelName:" + modelName);
+		System.out.println("template:" + template);
 	}
 	@Override
 	public void updateTemplate(String modelName, String template) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("modelName:" + modelName);
+		System.out.println("template:" + template);
+	}
+	
+	@Override
+	public void saveTemplateFolde(String templateName) {
+		if (!templateName.endsWith(File.separator)) {
+			templateName = templateName + File.separator;
+		}
+		String templatePath = this.apiConfig.getApiModelTmpFolder() + templateName;
+		File templateFile = new File(templatePath);
+		if (!templateFile.exists()) {
+			templateFile.mkdirs();
+		}
 	}
 }
