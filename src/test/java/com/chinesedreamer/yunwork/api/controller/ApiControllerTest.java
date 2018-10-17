@@ -1,7 +1,5 @@
 package com.chinesedreamer.yunwork.api.controller;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,7 +10,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alibaba.fastjson.JSON;
-import com.chinesedreamer.yunwork.api.model.ApiModel;
 import com.chinesedreamer.yunwork.api.vo.ApiModelTreeNodelVo;
 
 @RunWith(SpringRunner.class)

@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -58,12 +59,15 @@ public class ApiController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "tmp/list")
-	public ApiModelTreeNodelVo getTemplateList(String modelName){
+	public ApiModelTreeNodelVo getTemplateList(String folderName){
 		ApiModelTreeNodelVo vo = new ApiModelTreeNodelVo();
-		List<ApiModel> apiModels = this.apiModelService.getTemplateList(modelName);
+		vo.setFolderName("root");
+		vo.setFolderPath(folderName);
+		List<ApiModel> apiModels = this.apiModelService.getTemplateList(folderName);
 		if (null != apiModels) {
 			apiModels.forEach(apiModel -> {
-				String[] dept = apiModel.getModelName().split(File.separator);
+				int index = StringUtils.isEmpty(folderName) ? 0 : folderName.length();
+				String[] dept = apiModel.getTemplatePath().substring(index).split(File.separator);
 				ApiModelTreeNodelVo tmpVo = vo;
 				for (int i = 0; i < dept.length ; i++) {
 					if (i == dept.length - 1) {
@@ -76,6 +80,7 @@ public class ApiController {
 						tmpVo.getSubNode().add(node);
 					}else {
 						ApiModelTreeNodelVo node = new ApiModelTreeNodelVo();
+						node.setFolderPath(StringUtils.isEmpty(folderName) ? "" : folderName + dept[i] + File.separator);
 						node.setFolderName(dept[i]);
 						if (null == tmpVo.getSubNode()) {
 							tmpVo.setSubNode(new ArrayList<ApiModelTreeNodelVo>());

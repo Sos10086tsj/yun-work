@@ -42,7 +42,7 @@ public class ApiModelServiceImpl implements ApiModelService{
 		return new ApiModel(modelName, templatePath);
 	}
 	@Override
-	public List<ApiModel> getTemplateList(String modelName) {
+	public List<ApiModel> getTemplateList(String folderName) {
 		List<ApiModel> apiModels = new ArrayList<ApiModel>();
 		File folder = new File(this.apiConfig.getApiModelTmpFolder());
 		List<String> filePaths = new ArrayList<String>();
@@ -51,16 +51,16 @@ public class ApiModelServiceImpl implements ApiModelService{
 		}
 		for (String filePath : filePaths) {
 			String templatePath = filePath.substring(folder.getPath().length() + 1);
-			if (StringUtils.isNotEmpty(modelName)) {
-				if (templatePath.contains(modelName)) {
+			if (StringUtils.isNotEmpty(folderName)) {
+				if (templatePath.startsWith(folderName)) {
 					ApiModel apiModel = new ApiModel();
-					apiModel.setModelName(templatePath);
+					apiModel.setModelName(templatePath.substring(templatePath.lastIndexOf(File.separator) + 1));
 					apiModel.setTemplatePath(templatePath);
 					apiModels.add(apiModel);
 				}
 			}else {
 				ApiModel apiModel = new ApiModel();
-				apiModel.setModelName(templatePath);
+				apiModel.setModelName(templatePath.substring(templatePath.lastIndexOf(File.separator) + 1));
 				apiModel.setTemplatePath(templatePath);
 				apiModels.add(apiModel);
 			}

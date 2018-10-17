@@ -4,6 +4,7 @@ import java.util.List;
 
 public class ApiModelTreeNodelVo {
 	private String folderName;
+	private String folderPath;
 	private String modelName;
 	private String modelPath;
 	private List<ApiModelTreeNodelVo> subNode;
@@ -31,4 +32,11 @@ public class ApiModelTreeNodelVo {
 	public void setSubNode(List<ApiModelTreeNodelVo> subNode) {
 		this.subNode = subNode;
 	}
+	public String getFolderPath() {
+		return folderPath;
+	}
+	public void setFolderPath(String folderPath) {
+		this.folderPath = folderPath;
+	}
+	
 }

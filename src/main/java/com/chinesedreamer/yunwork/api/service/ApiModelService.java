@@ -17,7 +17,7 @@ public interface ApiModelService {
 	 * @param modelName
 	 * @return
 	 */
-	public List<ApiModel> getTemplateList(String modelName);
+	public List<ApiModel> getTemplateList(String folderName);
 	
 	/**
 	 * 保存模板
