@@ -9,6 +9,7 @@ public enum ApiPropertyType {
 	STRING,
 	DECIMAL,
 	INT,
+	BOOLEAN,
 	LIST,
 	MAP,
 	MODEL;

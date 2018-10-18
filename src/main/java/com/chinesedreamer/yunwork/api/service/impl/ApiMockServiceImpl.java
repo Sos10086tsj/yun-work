@@ -182,16 +182,20 @@ public class ApiMockServiceImpl implements ApiMockService{
 			switch (propertyType) {
 				case STRING:
 					mockProperty.setClazz(String.class);
-					mockProperty.setValue(this.mockPropertyValue(String.class, convertFinalConfs(confs,4)));
+					mockProperty.setValue(this.mockPropertyValue(propertyName, String.class, convertFinalConfs(confs,4)));
 				break;
 				case INT:
 					mockProperty.setClazz(Integer.class);
-					mockProperty.setValue(this.mockPropertyValue(Integer.class, convertFinalConfs(confs,4)));
+					mockProperty.setValue(this.mockPropertyValue(propertyName, Integer.class, convertFinalConfs(confs,4)));
 				break;
 				case DECIMAL:
 					mockProperty.setClazz(BigDecimal.class);
-					mockProperty.setValue(this.mockPropertyValue(BigDecimal.class, convertFinalConfs(confs,5)));
+					mockProperty.setValue(this.mockPropertyValue(propertyName, BigDecimal.class, convertFinalConfs(confs,5)));
 				break;
+				case BOOLEAN:
+					mockProperty.setClazz(Boolean.class);
+					mockProperty.setValue(this.mockPropertyValue(propertyName, BigDecimal.class, convertFinalConfs(confs,2)));
+					break;
 				case MAP:
 					mockProperty.setClazz(Map.class);
 					mockProperty.setValue(propertyValue);
@@ -256,7 +260,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private <T> T mockPropertyValue(Class<T> clazz, String... configurations) {
+	private <T> T mockPropertyValue(String propertyName, Class<T> clazz, String... configurations) {
 		if (clazz.equals(Integer.class)) {//configurations = int,min, max, value
 			if (StringUtils.isNotEmpty(configurations[1])) {
 				return (T)Integer.valueOf(configurations[1]);
@@ -302,11 +306,17 @@ public class ApiMockServiceImpl implements ApiMockService{
 				builder.append(tmpInt_1).append(".").append(tmpInt_2);
 				return (T)(new BigDecimal(builder.toString()));
 			}
+		}else if (clazz.equals(Boolean.class)) {
+			if (StringUtils.isNotEmpty(configurations[1])) {
+				return (T)(String)(configurations[1]);
+			}else {
+				return (T)(Boolean)(RandomUtils.nextInt(1, 10) % 2 == 0);
+			}
 		}else if (clazz.equals(String.class)) {//configurations = string,length, value
 			if (StringUtils.isNotEmpty(configurations[1])) {
 				return (T)(String)(configurations[1]);
 			}else {
-				return (T)this.randomString(StringUtils.isEmpty(configurations[2]) ? null : Integer.valueOf(configurations[2]));
+				return (T)this.randomString(propertyName, StringUtils.isEmpty(configurations[2]) ? null : Integer.valueOf(configurations[2]));
 			}
 			
 		}
@@ -314,15 +324,19 @@ public class ApiMockServiceImpl implements ApiMockService{
 	}
 	
 	/**
-	 * 随机生成字符串
+	 * 随机生成字符串。如果存在 propertyName.lib 文件，获取文件内数据；
+	 * 如果不存在，随机获取文件。
 	 * @param length
 	 * @return
 	 */
-	private String randomString(Integer length) {
-		File folder = new File(this.apiConfig.getApiMockWordLibrary());
-		int fileNum = folder.list().length;
-		int randomIdx = RandomUtils.nextInt(0, fileNum);
-		File file = folder.listFiles()[randomIdx];
+	private String randomString(String propertyName, Integer length) {
+		File file = new File(this.apiConfig.getApiMockWordLibrary() + propertyName + ".lib");
+		if (!file.exists()) {
+			File folder = new File(this.apiConfig.getApiMockWordLibrary());
+			int fileNum = folder.list().length;
+			int randomIdx = RandomUtils.nextInt(0, fileNum);
+			file = folder.listFiles()[randomIdx];
+		}
 		List<String> lines = new ArrayList<String>();
 		
 		try {
