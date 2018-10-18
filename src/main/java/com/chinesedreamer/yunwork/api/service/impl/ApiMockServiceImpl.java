@@ -67,12 +67,16 @@ public class ApiMockServiceImpl implements ApiMockService{
 			while (null != (tmpStr = br.readLine())) {
 				if (StringUtils.isNotEmpty(tmpStr)) {
 					//TODO tmpStr 解析成完整的格式
+					int index = tmpStr.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER);
+					if (-1 == index && !tmpStr.startsWith("@")) {
+						tmpStr = tmpStr.trim() + "[string]";
+					}
 					if (modelStart) {
 						if (this.mapEnd(tmpStr)) {
 							modelStart = false;
 							tmpModelName = null;
 						}else {
-							mapProperties.get(tmpModelName).add(tmpStr.trim());
+							mapProperties.get(tmpModelName).add(tmpStr);
 						}
 					}else {
 						if (this.mapStart(tmpStr)) {//开始读取到map配置
@@ -82,7 +86,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 							tmpModelName = map_model_prefix + tmpStr.substring(beginIdx + 1, endIdx);
 							mapProperties.put(tmpModelName, new ArrayList<String>());
 						}else {
-							properties.add(tmpStr.trim());
+							properties.add(tmpStr);
 						}
 					}
 				}
@@ -155,7 +159,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 		return this.mockObject(propertyMap, valueMap);
 	}
 	
-	private String[] splitConfs(String propertyConf) {
+	private String[] splitConfs(String propertyConf) {	
 		int confStart = propertyConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER) + 1;
 		int confEnd = propertyConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER);
 		return propertyConf.substring(confStart, confEnd).split(ApplicationConstant.API_MOCK.PROP_CONF_SEPERATE_DELIMETER);
@@ -213,7 +217,11 @@ public class ApiMockServiceImpl implements ApiMockService{
 			tmpContainModel = true;
 			for (String tmpPropConf : mapProperties.get(map_model_prefix + modelName)) {
 				String tmpPropertyName = tmpPropConf.substring(0, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER));
-				if (mapProperties.containsKey(map_model_prefix + tmpPropertyName)) {
+				ApiPropertyType tmpPropertyType = ApiPropertyType.get(
+						tmpPropConf.substring(tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER) + 1, tmpPropConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER))
+						.split(ApplicationConstant.API_MOCK.PROP_CONF_SEPERATE_DELIMETER)[0]
+						);
+				if (tmpPropertyType.equals(ApiPropertyType.MODEL) && mapProperties.containsKey(map_model_prefix + tmpPropertyName)) {
 					if (null == tmpMapProperties) {
 						tmpMapProperties = new HashMap<String, List<String>>();
 					}

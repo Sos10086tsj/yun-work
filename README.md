@@ -20,6 +20,30 @@ YunWork 主要致力于mock服务，通过简单的mock方式，加快项目中�
 	 * property[decimal|value|length,precision]
 	 * property[list|modelName|size]
 	 * property[model|modelName]
+	 
+	 示例1：
+	 	col_1[string]
+		col_2[string]
+		col_3[int]
+		col_4[model|row]
+	示例2：
+		name[string]
+		age[int||20|60]
+		address[string|杉杉大厦]
+		company[string]
+		family[map|family]
+		fm[model|fm]
+		@model_family_start
+		id[int]
+		name[string]
+		address[string]
+		level[map|level]
+		@model_family_end
+		@model_level_start
+		id[int]
+		name[string]
+		@model_level_end
+		list[list|fm|2]
 		
 	-	java interface mock
 	-	dubbo service mock
@@ -28,3 +52,31 @@ YunWork 主要致力于mock服务，通过简单的mock方式，加快项目中�
 	-	mq mock
 	-	file mock
 	-	mybatis mock
+	
+API数据模拟模板说明
+	每行配置一个属性，格式为	propertyName[type|value|约束条件]，默认为string
+		property[int|value|min|max]
+		property[string|value|length]
+		property[decimal|value|length,precision]
+		property[list|modelName|size]
+		property[list|modelName|size]
+		
+	示例1：简单的配置对象student
+		name
+		age[int]
+		class[string]
+		
+	示例2：内嵌对象student
+		name
+		age[int]
+		clas[model|clas]
+		@model_clas_start
+		grade
+		clas[int||1|10]
+		@model_clas_end
+		ls[list|clas|3]
+		ext_std[model|student]	//外部model
+		
+		
+		
+		
