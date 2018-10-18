@@ -2,7 +2,10 @@ package com.chinesedreamer.yunwork.api.controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +46,13 @@ public class ApiController {
 			return this.getFailureJson("Model " + modelName + " is not exist. Please add it first.");
 		}
 		//2. 交给适配器模拟数据
-		return this.apiMockService.mockData(model);
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Enumeration<String> parameterNames = request.getParameterNames();
+		while (parameterNames.hasMoreElements()) {
+			String key = (String) parameterNames.nextElement();
+			paramMap.put(key, request.getParameter(key));
+		}
+		return this.apiMockService.mockData(model, paramMap);
 	}
 	private JSON getFailureJson(String message) {
 		JSONObject jo = new JSONObject();

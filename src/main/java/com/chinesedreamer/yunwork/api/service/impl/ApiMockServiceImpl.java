@@ -40,11 +40,11 @@ public class ApiMockServiceImpl implements ApiMockService{
 	@Resource
 	private ApiConfig apiConfig;
 	@Override
-	public Object mockData(ApiModel model) {
+	public Object mockData(ApiModel model, Map<String, Object> parameters) {
 		//	1.	读取文件
 		File templateFile = new File(model.getTemplatePath());
 		//	2.	解析不同节点，并根据生成器生产内容
-		return this.mockTemplateData(templateFile);
+		return this.mockTemplateData(templateFile, parameters);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 	 * @param templateFile
 	 * @return
 	 */
-	private Object mockTemplateData(File templateFile) {
+	private Object mockTemplateData(File templateFile, Map<String, Object> parameters) {
 		Object object = null;
 		try {
 			List<String> properties = new ArrayList<String>();
@@ -86,7 +86,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 							tmpModelName = map_model_prefix + tmpStr.substring(beginIdx + 1, endIdx);
 							mapProperties.put(tmpModelName, new ArrayList<String>());
 						}else {
-							properties.add(tmpStr);
+							properties.add(setProrertyDefaultValue(null, tmpStr, parameters));
 						}
 					}
 				}
@@ -100,6 +100,34 @@ public class ApiMockServiceImpl implements ApiMockService{
 			return null;
 		}
 		return object;
+	}
+	
+	private String setProrertyDefaultValue(String modelName, String propertyConf, Map<String, Object> parameters) {
+		int idx = propertyConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER);
+		String propertyName = propertyConf.substring(0, idx);
+		if (StringUtils.isNotEmpty(modelName)) {
+			propertyName = modelName.replaceAll(File.separator, ".") + propertyName;
+		}
+		if (parameters.containsKey(propertyName)) {//参数中包含属性，增加默认值
+			String confStr = propertyConf.substring(idx, propertyConf.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER));
+			String[] confs = confStr.split(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER);
+			StringBuilder builder = new StringBuilder();
+			builder.append(propertyConf.substring(0, idx))
+			.append(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER)
+			.append(confs[0]);
+			if (confs.length <= 2) {
+				builder.append("|")
+				.append(parameters.get(propertyName));
+			}else {
+				for (int i = 2; i < confs.length; i++) {
+					builder.append("|")
+					.append(confs[i]);
+				}
+			}
+			builder.append(ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER);
+			propertyConf = builder.toString();
+		}
+		return propertyConf;
 	}
 	
 	/**
@@ -202,7 +230,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 					break;
 				case MODEL:
 					mockProperty.setClazz(Class.forName(confs[2]));
-					mockProperty.setValue(this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelRootFolder() + confs[1].replaceAll(".", File.separator) + ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN)));
+					mockProperty.setValue(this.mockData(new ApiModel(confs[1], this.apiConfig.getApiModelRootFolder() + confs[1].replaceAll(".", File.separator) + ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN), null));
 				break;
 				default:
 				break;
@@ -234,7 +262,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 			}			
 		}
 		if (!tmpContainModel && !modelIsProperty) {//不是属性model，且配置文件不包含model定义
-			propertyValue = this.mockData(new ApiModel(modelName, this.apiConfig.getApiModelTmpFolder() + modelName + ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN));
+			propertyValue = this.mockData(new ApiModel(modelName, this.apiConfig.getApiModelTmpFolder() + modelName + ApplicationConstant.API_MOCK.TEMPLATE_FILE_PATTERN), null);
 		}else {
 			propertyValue = this.convertObject(mapProperties.get(map_model_prefix + modelName), tmpMapProperties);
 		}
