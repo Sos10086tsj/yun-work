@@ -69,7 +69,7 @@ public class ApiMockServiceImpl implements ApiMockService{
 					//TODO tmpStr 解析成完整的格式
 					int index = tmpStr.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER);
 					if (-1 == index && !tmpStr.startsWith("@")) {
-						tmpStr = tmpStr.trim() + "[string]";
+						tmpStr = tmpStr.trim() + ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER + "string" + ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER;
 					}
 					if (modelStart) {
 						if (this.mapEnd(tmpStr)) {
@@ -91,6 +91,28 @@ public class ApiMockServiceImpl implements ApiMockService{
 					}
 				}
 			}
+			//检查参数中是否包含model中没有的字段，增加进来
+			for (String key : parameters.keySet()) {
+				if (key.equals("modelName")) {
+					continue;
+				}
+				if (!key.contains(".")) {//包含 . 时为模型参数
+					boolean contain = false;
+					for (String property : properties) {
+						int index = property.indexOf(ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER);
+						if(property.substring(0, index).equalsIgnoreCase(key)){
+							contain = true;
+							break;
+						}
+					}
+					if (!contain) {
+						properties.add(
+								key + ApplicationConstant.API_MOCK.PROP_CONF_START_DELIMETER + "string|" 
+						+ parameters.get(key) + ApplicationConstant.API_MOCK.PROP_CONF_END_DELIMETER);
+					}
+				}
+			}
+			
 			br.close();
 			isr.close();
 			fis.close();
