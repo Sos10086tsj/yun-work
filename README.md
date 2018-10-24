@@ -15,7 +15,7 @@ YunWork 主要致力于mock服务，通过简单的mock方式，加快项目中�
 		1、参数或者说明中，不可出现“=”
 		2、参数支持
 			 * confStr [type|value|约束条件]
-	 * property[int|value|min,max]
+	 * property[int|value|min|max]
 	 * property[string|value|length]
 	 * property[decimal|value|length,precision]
 	 * property[list|modelName|size]
