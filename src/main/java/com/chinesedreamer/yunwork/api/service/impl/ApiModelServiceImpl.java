@@ -17,12 +17,15 @@ import com.chinesedreamer.yunwork.api.config.ApiConfig;
 import com.chinesedreamer.yunwork.api.config.ApplicationConstant;
 import com.chinesedreamer.yunwork.api.model.ApiModel;
 import com.chinesedreamer.yunwork.api.service.ApiModelService;
+import com.chinesedreamer.yunwork.tools.java.dynamic.JavaMockTmplateService;
 
 @Service
 public class ApiModelServiceImpl implements ApiModelService{
 	private Logger logger = LoggerFactory.getLogger(ApiModelServiceImpl.class);
 	@Resource
 	private ApiConfig apiConfig;
+	@Resource
+	private JavaMockTmplateService javaMockTmplateService;
 	@Override
 	public ApiModel isModelExist(String modelName) {
 		//1. 获取模板文件
@@ -83,6 +86,12 @@ public class ApiModelServiceImpl implements ApiModelService{
 		} catch (IOException e) {
 			this.logger.error("{}", e);
 			return null;
+		}
+	}
+	@Override
+	public void transfer2Template(String codeSource, String folder) {
+		if (codeSource.equalsIgnoreCase("java")) {
+			this.javaMockTmplateService.transfer2Template(folder);
 		}
 	}
 }

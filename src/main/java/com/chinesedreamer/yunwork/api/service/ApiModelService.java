@@ -29,4 +29,11 @@ public interface ApiModelService {
 	 * @param templateContent
 	 */
 	public void saveTemplate(String modelName, String templateContent);
+	
+	/**
+	 * @param codeSource
+	 * @param folder
+	 * @param prefix	类名前缀。前缀为空时，表示文件夹是跟目录
+	 */
+	public void transfer2Template(String codeSource, String folder);
 }

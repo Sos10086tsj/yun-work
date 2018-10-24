@@ -123,4 +123,9 @@ public class ApiController {
 	public String getModel(@RequestParam("modelName") String modelName){
 		return this.apiModelService.getModel(modelName);
 	}
+	
+	@RequestMapping(value = "tmp/convert")
+	public void convert(@RequestParam("codeSource")String codeSource, @RequestParam("folderPath")String folderPath){
+		this.apiModelService.transfer2Template(codeSource, folderPath);
+	}
 }

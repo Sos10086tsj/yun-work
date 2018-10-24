@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    p {
+      margin: 10px 0;
+    }
+    body{
+      text-align: center;
+      padding: 15px;
+    }
+  </style>
+  <title>Title</title>
+</head>
+<body>
+<p style="line-height: 2"> 每行配置一个属性，格式为 propertyName[type|value|约束条件]，默认为string</p>
+<p style="line-height: 2">
+  <p>property[int|value|min|max]</p>
+  <p>property[string|value|length]</p>
+  <p>property[decimal|value|length,precision]</p>
+  <p>property[list|modelName|size]</p>
+  <p>property[list|modelName|size]</p>
+</p>
+<p style="line-height: 2">
+    示例1：简单的配置对象student
+  <p>name</p>
+  <p>age[int]</p>
+  <p>class[string]</p>
+</p>
+<p style="line-height: 2">
+    示例2：内嵌对象student
+  <p>name</p>
+  <p>age[int]</p>
+  <p>clas[model|clas]</p>
+  <p>@model_clas_start</p>
+  <p>grade</p>
+  <p>clas[int||1|10]</p>
+  <p>@model_clas_end</p>
+  <p> ls[list|clas|3]</p>
+  <p>ext_std[model|student] //外部model</p>
+</p>
+</body>
+</html>
